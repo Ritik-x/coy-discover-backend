@@ -1,0 +1,25 @@
+CREATE TABLE IF NOT EXISTS profiles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    age INTEGER NOT NULL,
+    photo TEXT NOT NULL,
+    bio TEXT NOT NULL,
+    city TEXT NOT NULL,
+    interests TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS swipes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL UNIQUE,
+    action TEXT NOT NULL CHECK(action IN ('like', 'pass')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (profile_id) REFERENCES profiles(id)
+);
+
+
+CREATE TABLE IF NOT EXISTS incoming_likes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profile_id INTEGER NOT NULL UNIQUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (profile_id) REFERENCES profiles(id)
+);
