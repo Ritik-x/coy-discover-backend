@@ -9,6 +9,9 @@
     "start": "node src/server.js",
     "seed": "node src/db/seed.js"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

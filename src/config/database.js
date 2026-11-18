@@ -1,8 +1,8 @@
 import Database from "better-sqlite3";
 import { readFileSync } from "node:fs";
 
-// Create database file in backend root
-const db = new Database("discover.db");
+const dbPath = process.env.DATABASE_PATH || "discover.db";
+const db = new Database(dbPath);
 
 // Enable foreign key constraints
 db.pragma("foreign_keys = ON");

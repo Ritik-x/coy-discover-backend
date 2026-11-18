@@ -227,15 +227,16 @@ const profiles = [
   },
 ];
 
-// Avoid duplicate seeding
-const existingProfiles = db
-  .prepare("SELECT COUNT(*) AS count FROM profiles")
-  .get();
+export function seedIfEmpty() {
+  const existingProfiles = db
+    .prepare("SELECT COUNT(*) AS count FROM profiles")
+    .get();
 
-if (existingProfiles.count > 0) {
-  console.log("Profiles already seeded. Skipping...");
-  db.close();
-} else {
+  if (existingProfiles.count > 0) {
+    console.log("Profiles already seeded. Skipping...");
+    return;
+  }
+
   const seedProfiles = db.transaction(() => {
     const insertProfile = db.prepare(`
       INSERT INTO profiles (
@@ -266,8 +267,6 @@ if (existingProfiles.count > 0) {
       insertedIds.push(Number(result.lastInsertRowid));
     });
 
-    // These profiles have already liked our logged-in user.
-    // We will only reveal them if our user likes them back.
     const insertIncomingLike = db.prepare(`
       INSERT INTO incoming_likes (profile_id)
       VALUES (?)
@@ -282,11 +281,16 @@ if (existingProfiles.count > 0) {
     return insertedIds.length;
   });
 
-  try {
-    const total = seedProfiles();
+  const total = seedProfiles();
+  console.log(`${total} profiles seeded successfully`);
+  console.log("6 incoming likes seeded successfully");
+}
 
-    console.log(`${total} profiles seeded successfully`);
-    console.log("6 incoming likes seeded successfully");
+const isDirectRun = process.argv[1]?.includes("seed.js");
+
+if (isDirectRun) {
+  try {
+    seedIfEmpty();
   } catch (error) {
     console.error("Seeding failed:", error.message);
     process.exitCode = 1;
